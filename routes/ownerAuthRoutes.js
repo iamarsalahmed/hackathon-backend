@@ -1,0 +1,112 @@
+
+
+// export default router;
+import express from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import RestaurantOwner from '../models/RestaurantOwner.js'
+const router = express.Router();
+
+router.post("/owner/signup", async (req, res) => {
+    try {
+      const { name, email, password, phone } = req.body;
+  
+      if (!phone) {
+        return res.status(400).json({ message: "Phone number is required" });
+      }
+  
+      const existingOwner = await RestaurantOwner.findOne({ email });
+      if (existingOwner) {
+        return res.status(400).json({ message: "Owner already exists" });
+      }
+  
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newOwner = new RestaurantOwner({
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+      });
+  
+      await newOwner.save();
+      res.status(201).json({ message: "Restaurant Owner created successfully" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+// Login Route
+router.post("/owner/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+  
+      const owner = await RestaurantOwner.findOne({ email }).select("+password");
+      if (!owner) {
+        return res.status(404).json({ message: "Owner not found" });
+      }
+  
+      const isPasswordValid = await bcrypt.compare(password, owner.password);
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+  
+      const token = jwt.sign(
+        { email: owner.email, userId: owner._id },
+        process.env.SECRET_KEY,
+        { expiresIn: "1h" }
+      );
+  
+      res.cookie("jwt", token, { httpOnly: false });
+      res.status(200).json({ message: "Login successful" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+// router.post("/owner/login", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Find the user
+//     const client = await RestaurantOwner.findOne({ email });
+//     if (!client) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Compare passwords
+//     const isPasswordValid = await bcrypt.compare(password, client.password);
+//     if (!isPasswordValid) {
+//       return res.status(401).json({ message: "Invalid credentials" });
+//     }
+// console.log ( "password checked okay")
+//     // Generate JWT
+//     const token = jwt.sign(
+//       { email: client.email, userId: client._id, role: client.role },
+//       process.env.SECRET_KEY,
+//       { expiresIn: "1h" }
+//     );
+//     console.log ( "token checked okay")
+//     res.cookie("jwt", token, { httpOnly: false }); // Set `secure: true` in production
+//     res.status(200).json({ message: "Login successful" });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });  
+
+// Get All Users Route
+router.get("/owners", async (req, res) => {
+    try {
+      const owners = await RestaurantOwner.find({}, { name: 1, email: 1, phone: 1 });
+      res.status(200).json(owners);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+
+// Logout Route
+router.post("/logout", (req, res) => {
+  res.clearCookie("jwt", { httpOnly: true});
+  res.status(200).json({ message: "Logged out successfully" });
+});
+
+export default router;
