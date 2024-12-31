@@ -5,6 +5,10 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import RestaurantOwner from '../models/RestaurantOwner.js'
+import { jwtDecode } from "jwt-decode"
+
+
+
 const router = express.Router();
 
 router.post("/owner/signup", async (req, res) => {
@@ -102,7 +106,42 @@ router.get("/owners", async (req, res) => {
     }
   });
   
-
+  router.get("/ownerDetails", async (req, res) => {
+    try {
+      // Extract token from the Authorization header
+      const token = req.headers.authorization?.split(" ")[1]; // Get the token from Authorization header
+  
+      if (!token) {
+        return res.status(400).json({ error: "Token not provided" });
+      }
+  
+      // Decode the token to extract restaurantOwnerId
+      const decodedToken = jwtDecode(token);
+      const restaurantOwnerId = decodedToken.userId; // Assuming the token contains the restaurantOwnerId
+      // console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Debugging log
+  
+      // Fetch the restaurant owner details from the database
+      const owner = await RestaurantOwner.findById(restaurantOwnerId, {
+        name: 1,
+        email: 1,
+        phone: 1,
+        profileImage: 1,
+        createdAt: 1,
+        _id: 1, // Add any other fields you need
+      });
+  
+      if (!owner) {
+        return res.status(404).json({ error: "Restaurant owner not found" });
+      }
+  
+      // Return the restaurant owner details
+      res.status(200).json(owner);
+    } catch (error) {
+      console.error("Error fetching restaurant owner details:", error); // Error handling log
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
 // Logout Route
 router.post("/logout", (req, res) => {
   res.clearCookie("jwt", { httpOnly: true});

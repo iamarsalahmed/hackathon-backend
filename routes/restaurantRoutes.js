@@ -1,6 +1,6 @@
 import express from 'express';
 import Restaurant from '../models/restaurant.js'; // Update path as necessary
-
+import { jwtDecode } from "jwt-decode"
 const router = express.Router();
 
 // Create a new restaurant
@@ -22,14 +22,90 @@ router.get('/restaurantList', async (req, res) => {
   }
 });
 // Get all restaurants
-router.get('/', async (req, res) => {
+// router.get('/', async (req, res) => {
+//   try {
+//     const restaurants = await Restaurant.find().populate('owner').populate('orders');;
+//     res.status(200).json(restaurants);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+
+// router.get("/", async (req, res) => {
+//   try {
+//     // Extract token from the Authorization header
+//     const token = req.headers.authorization?.split(" ")[1]; // Get the token from Authorization header
+
+//     if (!token) {
+//       return res.status(400).json({ error: "Token not provided" });
+//     }
+
+//     // Decode the token to extract restaurantOwnerId
+//     const decodedToken = jwtDecode(token);
+//     const restaurantOwnerId = decodedToken.userId; // Assuming the token contains the restaurantOwnerId
+//     console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Debugging log
+
+//     // Fetch all restaurants and check the owner id
+//     const restaurants = await Restaurant.find()
+//       .populate("owner")
+//       .populate("orders");
+
+//     // Filter the restaurants that belong to the decoded restaurantOwnerId
+//     const filteredRestaurants = restaurants.filter(
+//       (restaurant) => restaurant.owner && restaurant.owner._id.toString() === restaurantOwnerId
+//     );
+
+//     if (filteredRestaurants.length === 0) {
+//       return res.status(404).json({ error: "No restaurants found for this owner" });
+//     }
+
+//     // Return the filtered restaurants
+//     res.status(200).json(filteredRestaurants);
+//   } catch (err) {
+//     console.error("Error fetching restaurants:", err); // Error handling log
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+router.get("/", async (req, res) => {
   try {
-    const restaurants = await Restaurant.find().populate('owner').populate('orders');;
-    res.status(200).json(restaurants);
+    // Extract token from the Authorization header
+    const token = req.headers.authorization?.split(" ")[1]; // Get the token from Authorization header
+
+    if (!token) {
+      return res.status(400).json({ error: "Token not provided" });
+    }
+
+    // Decode the token to extract restaurantOwnerId
+    const decodedToken = jwtDecode(token);
+    const restaurantOwnerId = decodedToken.userId; // Assuming the token contains the restaurantOwnerId
+    console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Debugging log
+
+    // Fetch all restaurants and check the owner id
+    const restaurants = await Restaurant.find()
+      .populate("owner")
+      .populate("orders");
+
+    // Filter the restaurants that belong to the decoded restaurantOwnerId
+    const filteredRestaurants = restaurants.filter(
+      (restaurant) => restaurant.owner && restaurant.owner._id.toString() === restaurantOwnerId
+    );
+
+    // If no restaurants are found, return a message with a 200 status
+    if (filteredRestaurants.length === 0) {
+      return res.status(200).json({ message: "No restaurants in database" });
+    }
+
+    // Return the filtered restaurants
+    res.status(200).json(filteredRestaurants);
   } catch (err) {
+    console.error("Error fetching restaurants:", err); // Error handling log
     res.status(500).json({ error: err.message });
   }
 });
+
+
+
 // Middleware to authenticate and extract the user ID from the token
 // const authenticateJWT = (req, res, next) => {
 //     const token = req.cookies.jwt; // Get the JWT token from cookies
