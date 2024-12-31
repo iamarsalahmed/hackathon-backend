@@ -13,7 +13,14 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-
+router.get('/restaurantList', async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find()
+    res.status(200).json(restaurants);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 // Get all restaurants
 router.get('/', async (req, res) => {
   try {
