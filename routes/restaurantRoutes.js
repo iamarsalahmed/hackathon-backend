@@ -52,8 +52,7 @@ router.get("/", async (req, res) => {
     
       // Filter condition
       return (
-        
-        console.log("sara chutiyapa hai", restaurant);
+        console.log("sara chutiyapa hai", restaurant)
         // restaurant.owner=== restaurantOwnerId
       );
     });
