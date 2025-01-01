@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
     // console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Debugging log
 
     // Fetch all restaurants and check the owner id
-    const restaurants = await Restaurant.find()
+    const restaurants = await Restaurant.find();
     // console.log("sara chutiyapa hai", restaurants);
     // Filter the restaurants that belong to the decoded restaurantOwnerId
     // const filteredRestaurants = restaurants.filter(
@@ -45,20 +45,21 @@ router.get("/", async (req, res) => {
     //     restaurant.owner &&
     //     restaurant.owner._id.toString() === restaurantOwnerId
     // );
+
     const filteredRestaurants = restaurants.filter((restaurant) => {
       // console.log("Restaurant being checked:", restaurant.owner); // Log the restaurant name
       // console.log("Restaurant owner ID:", restaurant.owner._id); // Log the owner's ID if it exists
       // console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Log the decoded owner ID
-    
+      const ownerId = restaurant.owner?._id?.toString();
       // Filter condition
       return (
-        console.log("sara chutiyapa hai", restaurant)
-        // restaurant.owner=== restaurantOwnerId
+        console.log("sara chutiyapa hai", ownerId),
+        ownerId === restaurantOwnerId
       );
     });
-    
+
     console.log("Filtered Restaurants:", filteredRestaurants); // Log the final filtered array
-    
+
     console.log(filteredRestaurants);
     // If no restaurants are found, return a message with a 200 status
     if (filteredRestaurants.length === 0) {
