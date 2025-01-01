@@ -63,8 +63,8 @@ router.post("/owner/login", async (req, res) => {
       res.cookie("jwt", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Only true in production
-        sameSite: 'None', // Allow cross-origin requests
-        domain:"https://foodapp-six-lemon.vercel.app/"
+        sameSite: 'None' // Allow cross-origin requests
+       
       });
       res.status(200).json({ message: "Login successful" });
     } catch (error) {
