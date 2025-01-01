@@ -16,10 +16,20 @@ import restaurantRoutes from './routes/restaurantRoutes.js'
 const app = express()
 const PORT = 3001
 dotenv.config();
+// app.use(cors({
+//     origin: "https://foodapp-six-lemon.vercel.app/",
+//     credentials: true,
+//   }));
+
 app.use(cors({
-    origin: "https://foodapp-six-lemon.vercel.app/",
+    origin: [
+      "https://foodapp-six-lemon.vercel.app",  // without the trailing slash
+      "https://foodapp-six-lemon.vercel.app/"  // with the trailing slash
+    ],
     credentials: true,
   }));
+  
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
