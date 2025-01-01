@@ -64,6 +64,7 @@ router.post("/owner/login", async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Only true in production
         sameSite: 'None', // Allow cross-origin requests
+        domain:"https://foodapp-six-lemon.vercel.app/"
       });
       res.status(200).json({ message: "Login successful" });
     } catch (error) {
@@ -113,7 +114,7 @@ router.get("/owners", async (req, res) => {
   router.get("/ownerDetails", async (req, res) => {
     try {
       // Extract token from the Authorization header
-      const token = req.headers.authorization?.split(" ")[1]; // Get the token from Authorization header
+      const token = req.headers.authorization?.split(" ")[1] || req.cookies; // Get the token from Authorization header
   
       if (!token) {
         return res.status(400).json({ error: "Token not provided" });
