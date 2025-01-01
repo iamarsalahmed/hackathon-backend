@@ -54,7 +54,7 @@ router.get("/", async (req, res) => {
     
       // Filter condition
       return (
-
+        console.log(restaurant, "abs"),
         restaurant.owner._id?.toString() === restaurantOwnerId
       );
     });
