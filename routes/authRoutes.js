@@ -1,6 +1,6 @@
 
 import express from "express";
-import bcrypt from "bcrypt";
+import bcrypt from 'bcryptjs';
 import fileUpload from "express-fileupload";
 import cloudinary from "../config/couldinary.js";
 import User from "../models/user.js"; // Import your User model

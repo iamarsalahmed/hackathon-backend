@@ -2,7 +2,7 @@
 
 // export default router;
 import express from "express";
-import bcrypt from "bcrypt";
+import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import RestaurantOwner from '../models/RestaurantOwner.js'
 import { jwtDecode } from "jwt-decode"
