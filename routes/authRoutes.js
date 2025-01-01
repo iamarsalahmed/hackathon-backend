@@ -3,7 +3,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import fileUpload from "express-fileupload";
 import cloudinary from "../config/couldinary.js";
-import User from "../models/User.js"; // Import your User model
+import User from "../models/user.js"; // Import your User model
 import signup from "../controller/authController.js"
 import jwt from 'jsonwebtoken'
 import {jwtDecode} from "jwt-decode";
