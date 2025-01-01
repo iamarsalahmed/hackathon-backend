@@ -34,7 +34,7 @@ router.get("/", async (req, res) => {
     // Decode the token to extract restaurantOwnerId
     const decodedToken = jwtDecode(token);
     const restaurantOwnerId = decodedToken.userId; // Assuming the token contains the restaurantOwnerId
-    console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Debugging log
+    // console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Debugging log
 
     // Fetch all restaurants and check the owner id
     const restaurants = await Restaurant.find()
@@ -48,13 +48,13 @@ router.get("/", async (req, res) => {
     //     restaurant.owner._id.toString() === restaurantOwnerId
     // );
     const filteredRestaurants = restaurants.filter((restaurant) => {
-      console.log("Restaurant being checked:", restaurant.name); // Log the restaurant name
-      console.log("Restaurant owner ID:", restaurant.owner?._id); // Log the owner's ID if it exists
-      console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Log the decoded owner ID
+      // console.log("Restaurant being checked:", restaurant.owner); // Log the restaurant name
+      // console.log("Restaurant owner ID:", restaurant.owner._id); // Log the owner's ID if it exists
+      // console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Log the decoded owner ID
     
       // Filter condition
       return (
-        restaurant.owner &&
+
         restaurant.owner._id.toString() === restaurantOwnerId
       );
     });
