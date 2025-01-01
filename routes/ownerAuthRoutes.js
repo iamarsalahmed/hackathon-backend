@@ -60,7 +60,11 @@ router.post("/owner/login", async (req, res) => {
         { expiresIn: "1h" }
       );
   
-      res.cookie("jwt", token, { httpOnly: false });
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Only true in production
+        sameSite: 'None', // Allow cross-origin requests
+      });
       res.status(200).json({ message: "Login successful" });
     } catch (error) {
       res.status(500).json({ error: error.message });
