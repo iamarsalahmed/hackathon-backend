@@ -126,7 +126,7 @@ router.get("/owners", async (req, res) => {
       // Decode the token to extract restaurantOwnerId
       const decodedToken = jwtDecode(token);
       const restaurantOwnerId = decodedToken.userId; // Assuming the token contains the restaurantOwnerId
-      // console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Debugging log
+      console.log("Debugging log Decoded restaurantOwnerId:", restaurantOwnerId); 
   
       // Fetch the restaurant owner details from the database
       const owner = await RestaurantOwner.findById(restaurantOwnerId, {
