@@ -1,10 +1,10 @@
-import express from 'express';
-import Restaurant from '../models/restaurant.js'; // Update path as necessary
-import { jwtDecode } from "jwt-decode"
+import express from "express";
+import Restaurant from "../models/restaurant.js"; // Update path as necessary
+import { jwtDecode } from "jwt-decode";
 const router = express.Router();
 
 // Create a new restaurant
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const restaurant = new Restaurant(req.body);
     const savedRestaurant = await restaurant.save();
@@ -13,9 +13,9 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-router.get('/restaurantList', async (req, res) => {
+router.get("/restaurantList", async (req, res) => {
   try {
-    const restaurants = await Restaurant.find()
+    const restaurants = await Restaurant.find();
     res.status(200).json(restaurants);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
   try {
     // Extract token from the Authorization header
     const token = req.headers.authorization?.split(" ")[1]; // Get the token from Authorization header
-    console.log("Restaurant Owner wala log :", token)
+    console.log("Restaurant Owner wala log :", token);
     if (!token) {
       return res.status(400).json({ error: "Token not provided" });
     }
@@ -40,12 +40,28 @@ router.get("/", async (req, res) => {
     const restaurants = await Restaurant.find()
       .populate("owner")
       .populate("orders");
-
+    console.log("Restaurants", restaurants);
     // Filter the restaurants that belong to the decoded restaurantOwnerId
-    const filteredRestaurants = restaurants.filter(
-      (restaurant) => restaurant.owner && restaurant.owner._id.toString() === restaurantOwnerId
-    );
-console.log(filteredRestaurants)
+    // const filteredRestaurants = restaurants.filter(
+    //   (restaurant) =>
+    //     restaurant.owner &&
+    //     restaurant.owner._id.toString() === restaurantOwnerId
+    // );
+    const filteredRestaurants = restaurants.filter((restaurant) => {
+      console.log("Restaurant being checked:", restaurant.name); // Log the restaurant name
+      console.log("Restaurant owner ID:", restaurant.owner?._id); // Log the owner's ID if it exists
+      console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Log the decoded owner ID
+    
+      // Filter condition
+      return (
+        restaurant.owner &&
+        restaurant.owner._id.toString() === restaurantOwnerId
+      );
+    });
+    
+    console.log("Filtered Restaurants:", filteredRestaurants); // Log the final filtered array
+    
+    console.log(filteredRestaurants);
     // If no restaurants are found, return a message with a 200 status
     if (filteredRestaurants.length === 0) {
       return res.status(200).json({ message: "No restaurants in database" });
@@ -59,15 +75,13 @@ console.log(filteredRestaurants)
   }
 });
 
-
-
 // Middleware to authenticate and extract the user ID from the token
 // const authenticateJWT = (req, res, next) => {
 //     const token = req.cookies.jwt; // Get the JWT token from cookies
 //     if (!token) {
 //       return res.status(401).json({ error: 'Access denied. No token provided.' });
 //     }
-  
+
 //     try {
 //       const decoded = jwt.verify(token, process.env.JWT_SECRET); // Decode the token
 //       req.userId = decoded.id; // Attach the user ID to the request
@@ -76,7 +90,7 @@ console.log(filteredRestaurants)
 //       res.status(400).json({ error: 'Invalid token.' });
 //     }
 //   };
-  
+
 //   // Route to fetch restaurants for the logged-in owner
 //   router.get('/', authenticateJWT, async (req, res) => {
 //     try {
@@ -84,17 +98,20 @@ console.log(filteredRestaurants)
 //       const restaurants = await Restaurant.find({ owner: req.userId })
 //         .populate('owner')
 //         .populate('orders');
-  
+
 //       res.status(200).json(restaurants);
 //     } catch (err) {
 //       res.status(500).json({ error: err.message });
 //     }
 //   });
 // Get a restaurant by ID
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const restaurant = await Restaurant.findById(req.params.id).populate('owner').populate('orders');
-    if (!restaurant) return res.status(404).json({ error: 'Restaurant not found' });
+    const restaurant = await Restaurant.findById(req.params.id)
+      .populate("owner")
+      .populate("orders");
+    if (!restaurant)
+      return res.status(404).json({ error: "Restaurant not found" });
     res.status(200).json(restaurant);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -102,14 +119,17 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update a restaurant
-router.put('/:id', async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    ).populate('owner').populate('orders');
-    if (!updatedRestaurant) return res.status(404).json({ error: 'Restaurant not found' });
+    )
+      .populate("owner")
+      .populate("orders");
+    if (!updatedRestaurant)
+      return res.status(404).json({ error: "Restaurant not found" });
     res.status(200).json(updatedRestaurant);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -117,45 +137,49 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a restaurant
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const deletedRestaurant = await Restaurant.findByIdAndDelete(req.params.id);
-    if (!deletedRestaurant) return res.status(404).json({ error: 'Restaurant not found' });
-    res.status(200).json({ message: 'Restaurant deleted successfully' });
+    if (!deletedRestaurant)
+      return res.status(404).json({ error: "Restaurant not found" });
+    res.status(200).json({ message: "Restaurant deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 // Get menu of a specific restaurant
-router.get('/:id/menu', async (req, res) => {
-    try {
-      const restaurant = await Restaurant.findById(req.params.id);
-      if (!restaurant) return res.status(404).json({ error: 'Restaurant not found' });
-  
-      // Return the menu
-      res.status(200).json(restaurant.menu);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-  
-  // Update menu item of a specific restaurant
-  router.put('/:id/menu/:itemId', async (req, res) => {
-    try {
-      const restaurant = await Restaurant.findById(req.params.id);
-      if (!restaurant) return res.status(404).json({ error: 'Restaurant not found' });
-  
-      // Find the item to update in the menu
-      const menuItem = restaurant.menu.id(req.params.itemId);
-      if (!menuItem) return res.status(404).json({ error: 'Menu item not found' });
-  
-      // Update the menu item with the new data
-      menuItem.set(req.body);
-      await restaurant.save();
-  
-      res.status(200).json(menuItem);
-    } catch (err) {
-      res.status(400).json({ error: err.message });
-    }
-  });
+router.get("/:id/menu", async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findById(req.params.id);
+    if (!restaurant)
+      return res.status(404).json({ error: "Restaurant not found" });
+
+    // Return the menu
+    res.status(200).json(restaurant.menu);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update menu item of a specific restaurant
+router.put("/:id/menu/:itemId", async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findById(req.params.id);
+    if (!restaurant)
+      return res.status(404).json({ error: "Restaurant not found" });
+
+    // Find the item to update in the menu
+    const menuItem = restaurant.menu.id(req.params.itemId);
+    if (!menuItem)
+      return res.status(404).json({ error: "Menu item not found" });
+
+    // Update the menu item with the new data
+    menuItem.set(req.body);
+    await restaurant.save();
+
+    res.status(200).json(menuItem);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
 export default router;
