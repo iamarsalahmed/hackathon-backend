@@ -125,7 +125,12 @@ console.log ( "password checked okay")
       { expiresIn: "1h" }
     );
     console.log ( "token checked okay")
-    res.cookie("jwt", token, { httpOnly: false }); // Set `secure: true` in production
+    res.cookie("jwt", token,  {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Only true in production
+      sameSite: 'None' // Allow cross-origin requests
+     
+    }); // Set `secure: true` in production
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.status(500).json({ error: error.message });
