@@ -25,7 +25,8 @@ app.use(cors({
     origin: [
       "https://foodapp-six-lemon.vercel.app",  // without the trailing slash
       "https://foodapp-six-lemon.vercel.app/",  // with the trailing slash
-        "http://localhost:3000"
+      "https://foodapp-six-lemon.vercel.app/admin/dashboard",  
+      "http://localhost:3000"
     ],
     credentials: true,
   }));

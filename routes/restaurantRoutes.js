@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
   try {
     // Extract token from the Authorization header
     const token = req.headers.authorization?.split(" ")[1]; // Get the token from Authorization header
-
+    console.log("Restaurant Owner wala log :", token)
     if (!token) {
       return res.status(400).json({ error: "Token not provided" });
     }
@@ -45,7 +45,7 @@ router.get("/", async (req, res) => {
     const filteredRestaurants = restaurants.filter(
       (restaurant) => restaurant.owner && restaurant.owner._id.toString() === restaurantOwnerId
     );
-
+console.log(filteredRestaurants)
     // If no restaurants are found, return a message with a 200 status
     if (filteredRestaurants.length === 0) {
       return res.status(200).json({ message: "No restaurants in database" });
