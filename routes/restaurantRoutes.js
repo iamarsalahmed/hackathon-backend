@@ -38,9 +38,7 @@ router.get("/", async (req, res) => {
 
     // Fetch all restaurants and check the owner id
     const restaurants = await Restaurant.find()
-      .populate("owner")
-      .populate("orders");
-    console.log("sara chutiyapa hai", restaurants);
+    // console.log("sara chutiyapa hai", restaurants);
     // Filter the restaurants that belong to the decoded restaurantOwnerId
     // const filteredRestaurants = restaurants.filter(
     //   (restaurant) =>
@@ -55,7 +53,8 @@ router.get("/", async (req, res) => {
       // Filter condition
       return (
         
-        restaurant.owner.toString() === restaurantOwnerId
+        console.log("sara chutiyapa hai", restaurant);
+        // restaurant.owner=== restaurantOwnerId
       );
     });
     
