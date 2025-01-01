@@ -40,7 +40,7 @@ router.get("/", async (req, res) => {
     const restaurants = await Restaurant.find()
       .populate("owner")
       .populate("orders");
-    console.log("Restaurants", restaurants);
+    console.log("sara chutiyapa hai", restaurants);
     // Filter the restaurants that belong to the decoded restaurantOwnerId
     // const filteredRestaurants = restaurants.filter(
     //   (restaurant) =>
@@ -54,7 +54,7 @@ router.get("/", async (req, res) => {
     
       // Filter condition
       return (
-        console.log(restaurant, "abs"),
+        
         restaurant.owner._id?.toString() === restaurantOwnerId
       );
     });
