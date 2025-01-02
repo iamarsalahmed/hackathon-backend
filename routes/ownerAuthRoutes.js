@@ -40,52 +40,89 @@ router.post("/owner/signup", async (req, res) => {
   });
   
 // Login Route
-router.post("/owner/login", async (req, res) => {
-    try {
-      const { email, password } = req.body;
+// router.post("/owner/login", async (req, res) => {
+//     try {
+//       const { email, password } = req.body;
   
-      const owner = await RestaurantOwner.findOne({ email }).select("+password");
-      if (!owner) {
-        return res.status(404).json({ message: "Owner not found" });
-      }
+//       const owner = await RestaurantOwner.findOne({ email }).select("+password");
+//       if (!owner) {
+//         return res.status(404).json({ message: "Owner not found" });
+//       }
   
-      const isPasswordValid = await bcrypt.compare(password, owner.password);
-      if (!isPasswordValid) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
+//       const isPasswordValid = await bcrypt.compare(password, owner.password);
+//       if (!isPasswordValid) {
+//         return res.status(401).json({ message: "Invalid credentials" });
+//       }
   
-      // const token = jwt.sign(
-      //   { email: owner.email, userId: owner._id },
-      //   process.env.SECRET_KEY,
-      //   { expiresIn: "1h" }
-      // );
+//       // const token = jwt.sign(
+//       //   { email: owner.email, userId: owner._id },
+//       //   process.env.SECRET_KEY,
+//       //   { expiresIn: "1h" }
+//       // );
   
-      // res.cookie("jwt", token, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production', // Only true in production
-      //   sameSite: 'None' // Allow cross-origin requests
+//       // res.cookie("jwt", token, {
+//       //   httpOnly: true,
+//       //   secure: process.env.NODE_ENV === 'production', // Only true in production
+//       //   sameSite: 'None' // Allow cross-origin requests
        
-      // });
-      const token = jwt.sign(
-        { email: owner.email, userId: owner._id },
-        process.env.SECRET_KEY,
-        { expiresIn: "1h" }
-      );
+//       // });
+//       const token = jwt.sign(
+//         { email: owner.email, userId: owner._id },
+//         process.env.SECRET_KEY,
+//         { expiresIn: "1h" }
+//       );
       
-      // Set the cookie with the specified attributes
-      res.setHeader(
-        "Set-Cookie",
-        `jwt=${token}; HttpOnly; SameSite=None; Secure; Path=/; Partitioned`
-      );
+//       // Set the cookie with the specified attributes
+//       res.setHeader(
+//         "Set-Cookie",
+//         `jwt=${token}; HttpOnly; SameSite=None; Secure; Path=/; Partitioned`
+//       );
       
-      // Send response
-      res.status(200).json({ message: "Token set in cookie successfully" });
+//       // Send response
+//       res.status(200).json({ message: "Token set in cookie successfully" });
       
-      res.status(200).json({ message: "Login successful" });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+//       res.status(200).json({ message: "Login successful" });
+//     } catch (error) {
+//       res.status(500).json({ error: error.message });
+//     }
+//   });
+router.post("/owner/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find the owner by email and include the password in the query
+    const owner = await RestaurantOwner.findOne({ email }).select("+password");
+    if (!owner) {
+      return res.status(404).json({ message: "Owner not found" });
     }
-  });
+
+    // Validate the password
+    const isPasswordValid = await bcrypt.compare(password, owner.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Generate the JWT token
+    const token = jwt.sign(
+      { email: owner.email, userId: owner._id },
+      process.env.SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+
+    // Set the cookie with the specified attributes
+    res.setHeader(
+      "Set-Cookie",
+      `jwt=${token}; HttpOnly; SameSite=None; Secure; Path=/; Partitioned`
+    );
+
+    // Send response
+    return res.status(200).json({ message: "Login successful, token set in cookie" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+
 // router.post("/owner/login", async (req, res) => {
 //   try {
 //     const { email, password } = req.body;
