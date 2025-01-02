@@ -20,107 +20,21 @@ router.use(
 
 router.post("/signup", signup);
 
-// router.post("/signup", async (req, res) => {
-//   try {
-//     const { name, email, password, phone, address } = req.body;
-
-//     if (!phone) {
-//       return res.status(400).json({ message: "Phone number is required" });
-//     }
-
-//     const existingUser = await User.findOne({ email });
-//     if (existingUser) {
-//       return res.status(400).json({ message: "User already exists" });
-//     }
-
-//     // Handle file upload for profile image
-//     let profileImageUrl = "";
-//     console.log(profileImageUrl, "profileImageUrl")
-//     if (req.files && req.files.profileImage) {
-//       const file = req.files.profileImage;
-
-//       try {
-//         const uploadResult = await cloudinary.uploader.upload(file.tempFilePath, {
-//           folder: "profile_images",
-//           public_id: `${email}_profile`,
-//         });
-//         profileImageUrl = uploadResult.secure_url;
-//       } catch (error) {
-//         return res.status(500).json({ message: "Error uploading profile image", error: error.message });
-//       }
-//     }
-
-//     // Hash the password
-//     const hashedPassword = await bcrypt.hash(password, 10);
-
-//     // Create a new user
-//     const newUser = new User({
-//       name,
-//       email,
-//       password: hashedPassword,
-//       phone,
-//       profileImage: profileImageUrl, // Save the Cloudinary URL
-//       address: address, // Ensure the address is parsed from the frontend
-//     });
-
-//     await newUser.save();
-
-//     res.status(201).json({ message: "User created successfully", user: newUser });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-// router.post("/signup", async (req, res) => {
-//     try {
-//       const { name, email, password, role = "user", address, phone } = req.body;
-
-//       if (!phone) {
-//         return res.status(400).json({ message: "Phone number is required" });
-//       }
-
-//       const existingUser = await User.findOne({ email });
-//       if (existingUser) {
-//         return res.status(400).json({ message: "User already exists" });
-//       }
-
-//       // Hash password and create user
-//       const hashedPassword = await bcrypt.hash(password, 10);
-//       const newUser = new User({
-//         name,
-//         email,
-//         password: hashedPassword,
-//         role,
-//         address,
-//         phone,
-//       });
-//       await newUser.save();
-
-//       res.status(201).json({ message: "User created successfully" });
-//     } catch (error) {
-
-//       res.status(500).json({ error: error.message});
-//     }
-//   });
-
-// Login Route
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find the user
     const client = await User.findOne({ email });
     if (!client) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Compare passwords
     const isPasswordValid = await bcrypt.compare(password, client.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid Password" });
     }
     console.log("password checked okay");
-    // Generate JWT
+
     const token = jwt.sign(
       { email: client.email, userId: client._id },
       process.env.SECRET_KEY,
@@ -128,28 +42,16 @@ router.post("/login", async (req, res) => {
     );
     console.log("token checked okay");
 
-    // res.cookie("jwt", token,  {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production', // Only true in production
-    //   sameSite: 'None' // Allow cross-origin requests
+     res.cookie("jwt", token,  {
+       httpOnly: true,
+       secure: process.env.NODE_ENV === 'production', 
+       sameSite: 'None' 
 
-    // }); // Set `secure: true` in production
+     }); 
 
-    // res.cookie("jwt", token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production', // Only true in production
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Use 'Lax' for local dev
-    // });
 
-    const isProduction = process.env.NODE_ENV === "production";
-    const StringToken = `${token}`
-    res.cookie("jwt", StringToken, {
-      httpOnly: true,
-      secure: isProduction, // Secure cookies only in production
-      sameSite: isProduction ? "None" : "Lax", // Cross-origin only in production
-    });
-
-    console.log("cookie checked okay", token);
+    // console.log("cookie checked okay", token);
+    
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.status(500).json({ error: error.message });

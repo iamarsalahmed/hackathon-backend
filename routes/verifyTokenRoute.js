@@ -1,10 +1,10 @@
 import express from "express";
-import {isAuthenticated} from '../middleware/auth.js'
+// import {isAuthenticated} from '../middleware/auth.js'
 
 const router = express.Router();
 
 // POST /token route to verify the token
-router.post('/token', isAuthenticated, async (req, res) => {
+router.post('/token',  async (req, res) => {
   try {
   
 
