@@ -23,7 +23,7 @@ dotenv.config();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://foodapp-six-lemon.vercel.app/"],
+    origin: ["http://localhost:3000", "https://foodapp-six-lemon.vercel.app/", "https://foodapp-six-lemon.vercel.app/user/login"],
     credentials: true, // Enable credentials (cookies)
   })
 );
