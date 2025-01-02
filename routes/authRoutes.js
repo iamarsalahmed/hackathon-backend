@@ -1,23 +1,24 @@
-
 import express from "express";
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 import fileUpload from "express-fileupload";
 import cloudinary from "../config/couldinary.js";
 import User from "../models/user.js"; // Import your User model
-import signup from "../controller/authController.js"
-import jwt from 'jsonwebtoken'
-import {jwtDecode} from "jwt-decode";
+import signup from "../controller/authController.js";
+import jwt from "jsonwebtoken";
+import { jwtDecode } from "jwt-decode";
 import cookieParser from "cookie-parser";
 
 const router = express.Router();
 
 // Enable file upload middleware for this router
-router.use(fileUpload({
+router.use(
+  fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp/",
-}));
+  })
+);
 
-router.post('/signup', signup);
+router.post("/signup", signup);
 
 // router.post("/signup", async (req, res) => {
 //   try {
@@ -70,20 +71,19 @@ router.post('/signup', signup);
 //   }
 // });
 
-
 // router.post("/signup", async (req, res) => {
 //     try {
 //       const { name, email, password, role = "user", address, phone } = req.body;
-  
+
 //       if (!phone) {
 //         return res.status(400).json({ message: "Phone number is required" });
 //       }
-  
+
 //       const existingUser = await User.findOne({ email });
 //       if (existingUser) {
 //         return res.status(400).json({ message: "User already exists" });
 //       }
-  
+
 //       // Hash password and create user
 //       const hashedPassword = await bcrypt.hash(password, 10);
 //       const newUser = new User({
@@ -95,14 +95,14 @@ router.post('/signup', signup);
 //         phone,
 //       });
 //       await newUser.save();
-  
+
 //       res.status(201).json({ message: "User created successfully" });
 //     } catch (error) {
-  
+
 //       res.status(500).json({ error: error.message});
 //     }
 //   });
-  
+
 // Login Route
 router.post("/login", async (req, res) => {
   try {
@@ -119,29 +119,37 @@ router.post("/login", async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid Password" });
     }
-console.log ( "password checked okay")
+    console.log("password checked okay");
     // Generate JWT
     const token = jwt.sign(
-      { email: client.email, userId: client._id},
+      { email: client.email, userId: client._id },
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
-    console.log ( "token checked okay")
-  
-    
+    console.log("token checked okay");
+
     // res.cookie("jwt", token,  {
     //   httpOnly: true,
     //   secure: process.env.NODE_ENV === 'production', // Only true in production
     //   sameSite: 'None' // Allow cross-origin requests
-     
+
     // }); // Set `secure: true` in production
-    
+
+    // res.cookie("jwt", token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production', // Only true in production
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Use 'Lax' for local dev
+    // });
+
+    const isProduction = process.env.NODE_ENV === "production";
+
     res.cookie("jwt", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Only true in production
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Use 'Lax' for local dev
+      secure: isProduction, // Secure cookies only in production
+      sameSite: isProduction ? "None" : "Lax", // Cross-origin only in production
     });
-    console.log ( "cookie checked okay" , token)
+
+    console.log("cookie checked okay", token);
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -154,7 +162,7 @@ router.get("/userDetails", async (req, res) => {
     // Extract userId from the Authorization token
     const token = req.headers.authorization?.split(" ")[1]; // Get the token from Authorization header
 
-    console.log(token, "req.cookie token")
+    console.log(token, "req.cookie token");
     if (!token) {
       return res.status(400).json({ error: "Token not provided" });
     }
@@ -165,7 +173,15 @@ router.get("/userDetails", async (req, res) => {
     console.log("Decoded userId:", userId); // Debugging log
 
     // Fetch user details from the database using userId
-    const user = await User.findById(userId, { name: 1, email: 1, role: 1, phone: 1, profileImage :1, createdAt: 1, _id: 1       }); // Replace 'otherField' with fields you need
+    const user = await User.findById(userId, {
+      name: 1,
+      email: 1,
+      role: 1,
+      phone: 1,
+      profileImage: 1,
+      createdAt: 1,
+      _id: 1,
+    }); // Replace 'otherField' with fields you need
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -177,10 +193,9 @@ router.get("/userDetails", async (req, res) => {
   }
 });
 
-
 // Logout Route
 router.post("/user/logout", (req, res) => {
-  res.clearCookie("jwt", { httpOnly: true});
+  res.clearCookie("jwt", { httpOnly: true });
   res.status(200).json({ message: "Logged out successfully" });
 });
 
