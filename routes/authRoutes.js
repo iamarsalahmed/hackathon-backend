@@ -115,12 +115,12 @@ router.post("/login", async (req, res) => {
     // Compare passwords
     const isPasswordValid = await bcrypt.compare(password, client.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid Password" });
     }
 console.log ( "password checked okay")
     // Generate JWT
     const token = jwt.sign(
-      { email: client.email, userId: client._id, role: client.role },
+      { email: client.email, userId: client._id},
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
@@ -131,6 +131,7 @@ console.log ( "password checked okay")
       sameSite: 'None' // Allow cross-origin requests
      
     }); // Set `secure: true` in production
+    console.log ( "cookie checked okay" , token)
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.status(500).json({ error: error.message });
