@@ -54,18 +54,33 @@ router.post("/owner/login", async (req, res) => {
         return res.status(401).json({ message: "Invalid credentials" });
       }
   
+      // const token = jwt.sign(
+      //   { email: owner.email, userId: owner._id },
+      //   process.env.SECRET_KEY,
+      //   { expiresIn: "1h" }
+      // );
+  
+      // res.cookie("jwt", token, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production', // Only true in production
+      //   sameSite: 'None' // Allow cross-origin requests
+       
+      // });
       const token = jwt.sign(
         { email: owner.email, userId: owner._id },
         process.env.SECRET_KEY,
         { expiresIn: "1h" }
       );
-  
-      res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Only true in production
-        sameSite: 'None' // Allow cross-origin requests
-       
-      });
+      
+      // Set the cookie with the specified attributes
+      res.setHeader(
+        "Set-Cookie",
+        `jwt=${token}; HttpOnly; SameSite=None; Secure; Path=/; Partitioned`
+      );
+      
+      // Send response
+      res.status(200).json({ message: "Token set in cookie successfully" });
+      
       res.status(200).json({ message: "Login successful" });
     } catch (error) {
       res.status(500).json({ error: error.message });
