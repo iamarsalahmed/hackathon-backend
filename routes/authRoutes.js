@@ -129,12 +129,18 @@ console.log ( "password checked okay")
     console.log ( "token checked okay")
   
     
-    res.cookie("jwt", token,  {
+    // res.cookie("jwt", token,  {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production', // Only true in production
+    //   sameSite: 'None' // Allow cross-origin requests
+     
+    // }); // Set `secure: true` in production
+    
+    res.cookie("jwt", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Only true in production
-      sameSite: 'None' // Allow cross-origin requests
-     
-    }); // Set `secure: true` in production
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Use 'Lax' for local dev
+    });
     console.log ( "cookie checked okay" , token)
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
