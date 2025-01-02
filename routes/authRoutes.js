@@ -127,10 +127,10 @@ console.log ( "password checked okay")
       { expiresIn: "1h" }
     );
     console.log ( "token checked okay")
-    localStorage.setItem("jwt", token)
+  
     
     res.cookie("jwt", token,  {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production', // Only true in production
       sameSite: 'None' // Allow cross-origin requests
      
