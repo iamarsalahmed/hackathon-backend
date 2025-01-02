@@ -130,7 +130,7 @@ console.log ( "password checked okay")
   
     
     res.cookie("jwt", token,  {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Only true in production
       sameSite: 'None' // Allow cross-origin requests
      
