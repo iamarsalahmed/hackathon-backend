@@ -142,8 +142,8 @@ router.post("/login", async (req, res) => {
     // });
 
     const isProduction = process.env.NODE_ENV === "production";
-
-    res.cookie("jwt", token, {
+    const StringToken = `${token}`
+    res.cookie("jwt", StringToken, {
       httpOnly: true,
       secure: isProduction, // Secure cookies only in production
       sameSite: isProduction ? "None" : "Lax", // Cross-origin only in production
