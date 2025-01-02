@@ -7,6 +7,8 @@ import User from "../models/user.js"; // Import your User model
 import signup from "../controller/authController.js"
 import jwt from 'jsonwebtoken'
 import {jwtDecode} from "jwt-decode";
+import cookieParser from "cookie-parser";
+
 const router = express.Router();
 
 // Enable file upload middleware for this router
@@ -125,6 +127,8 @@ console.log ( "password checked okay")
       { expiresIn: "1h" }
     );
     console.log ( "token checked okay")
+    localStorage.setItem("jwt", token)
+    
     res.cookie("jwt", token,  {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Only true in production
