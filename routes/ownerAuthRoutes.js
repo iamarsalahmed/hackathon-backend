@@ -114,7 +114,12 @@ router.post("/owner/login", async (req, res) => {
     //   "Set-Cookie",
     //   `jwt=${token}; HttpOnly; SameSite=None; Secure; Path=/; Partitioned`
     // );
-    res.cookie("jwt", token );
+    res.cookie("jwt", token,{
+      
+      secure: process.env.NODE_ENV === "production", // Ensure cookie is sent only over HTTPS in production
+      maxAge: 3600000, // Set cookie expiry (1 hour in this case)
+      sameSite: "Strict", // Prevents the cookie from being sent with cross-site requests
+    } );
     // Send response
     return res.status(200).json({ message: "Login successful, token set in cookie" });
   } catch (error) {
