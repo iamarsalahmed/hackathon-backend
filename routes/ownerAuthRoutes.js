@@ -114,11 +114,7 @@ router.post("/owner/login", async (req, res) => {
     //   "Set-Cookie",
     //   `jwt=${token}; HttpOnly; SameSite=None; Secure; Path=/; Partitioned`
     // );
-    res.cookie("jwt", token,  {
-      secure: process.env.NODE_ENV === 'production', 
-      sameSite: 'None' 
-
-    });
+    res.cookie("jwt", token );
     // Send response
     return res.status(200).json({ message: "Login successful, token set in cookie" });
   } catch (error) {
@@ -171,6 +167,7 @@ router.get("/owners", async (req, res) => {
     try {
       // Extract token from the Authorization header
       const token = req.headers.authorization?.split(" ")[1] || req.cookies.jwtToken;
+   
       // console.log("Token from Authorization header:", req.headers.authorization?.split(" ")[1]);
       // console.log("Token from cookies:", req.cookies.jwtToken);
       // Get the token from Authorization header
@@ -181,8 +178,9 @@ router.get("/owners", async (req, res) => {
   
       // Decode the token to extract restaurantOwnerId
       const decodedToken = jwtDecode(token);
+      console.log(decodedToken, "decodedToken")
       const restaurantOwnerId = decodedToken.userId; // Assuming the token contains the restaurantOwnerId
-      // console.log("Debugging log Decoded restaurantOwnerId:", restaurantOwnerId); // 
+     
   
       // Fetch the restaurant owner details from the database
       const owner = await RestaurantOwner.findById(restaurantOwnerId, {
@@ -193,7 +191,7 @@ router.get("/owners", async (req, res) => {
         createdAt: 1,
         _id: 1, // Add any other fields you need
       });
-  
+   
       if (!owner) {
         return res.status(404).json({ error: "Restaurant owner not found" });
       }

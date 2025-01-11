@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
   try {
     // Extract token from the Authorization header
     const token = req.headers.authorization?.split(" ")[1]; // Get the token from Authorization header
-    console.log("Restaurant Owner wala log :", token);
+    // console.log("Restaurant Owner wala log :", token);
     if (!token) {
       return res.status(400).json({ error: "Token not provided" });
     }

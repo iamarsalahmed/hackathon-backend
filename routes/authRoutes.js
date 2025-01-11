@@ -71,7 +71,7 @@ router.get("/userDetails", async (req, res) => {
     // Decode the token to extract userId
     const decodedToken = jwtDecode(token);
     const userId = decodedToken.userId; // Assuming the token contains userId
-    console.log("Decoded userId:", userId); // Debugging log
+    // console.log("Decoded userId:", userId); // Debugging log
 
     // Fetch user details from the database using userId
     const user = await User.findById(userId, {
