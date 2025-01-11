@@ -43,7 +43,6 @@ router.post("/login", async (req, res) => {
     console.log("token checked okay");
 
      res.cookie("jwt", token,  {
-       httpOnly: true,
        secure: process.env.NODE_ENV === 'production', 
        sameSite: 'None' 
 

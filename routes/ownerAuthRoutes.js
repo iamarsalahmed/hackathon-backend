@@ -110,11 +110,15 @@ router.post("/owner/login", async (req, res) => {
     );
 
     // Set the cookie with the specified attributes
-    res.setHeader(
-      "Set-Cookie",
-      `jwt=${token}; HttpOnly; SameSite=None; Secure; Path=/; Partitioned`
-    );
+    // res.setHeader(
+    //   "Set-Cookie",
+    //   `jwt=${token}; HttpOnly; SameSite=None; Secure; Path=/; Partitioned`
+    // );
+    res.cookie("jwt", token,  {
+      secure: process.env.NODE_ENV === 'production', 
+      sameSite: 'None' 
 
+    });
     // Send response
     return res.status(200).json({ message: "Login successful, token set in cookie" });
   } catch (error) {
