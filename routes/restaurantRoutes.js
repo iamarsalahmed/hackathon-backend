@@ -53,14 +53,14 @@ router.get("/", async (req, res) => {
       const ownerId = restaurant.owner?._id?.toString();
       // Filter condition
       return (
-        console.log("sara chutiyapa hai", ownerId),
+      
         ownerId === restaurantOwnerId
       );
     });
 
-    console.log("Filtered Restaurants:", filteredRestaurants); // Log the final filtered array
+    // console.log("Filtered Restaurants:", filteredRestaurants); // Log the final filtered array
 
-    console.log(filteredRestaurants);
+    // console.log(filteredRestaurants);
     // If no restaurants are found, return a message with a 200 status
     if (filteredRestaurants.length === 0) {
       return res.status(200).json({ message: "No restaurants in database" });

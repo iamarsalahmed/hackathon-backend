@@ -33,14 +33,14 @@ router.post("/login", async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid Password" });
     }
-    console.log("password checked okay");
+  
 
     const token = jwt.sign(
       { email: client.email, userId: client._id },
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
-    console.log("token checked okay");
+   
 
      res.cookie("jwt", token,  {
        secure: process.env.NODE_ENV === 'production', 
@@ -63,7 +63,7 @@ router.get("/userDetails", async (req, res) => {
     // Extract userId from the Authorization token
     const token = req.headers.authorization?.split(" ")[1]; // Get the token from Authorization header
 
-    console.log(token, "req.cookie token");
+
     if (!token) {
       return res.status(400).json({ error: "Token not provided" });
     }

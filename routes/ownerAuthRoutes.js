@@ -171,8 +171,8 @@ router.get("/owners", async (req, res) => {
     try {
       // Extract token from the Authorization header
       const token = req.headers.authorization?.split(" ")[1] || req.cookies.jwtToken;
-      console.log("Token from Authorization header:", req.headers.authorization?.split(" ")[1]);
-      console.log("Token from cookies:", req.cookies.jwtToken);
+      // console.log("Token from Authorization header:", req.headers.authorization?.split(" ")[1]);
+      // console.log("Token from cookies:", req.cookies.jwtToken);
       // Get the token from Authorization header
   
       if (!token) {

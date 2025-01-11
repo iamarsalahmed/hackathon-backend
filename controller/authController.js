@@ -5,13 +5,13 @@ import cloudinary from "../config/couldinary.js"; // Cloudinary configuration
 const signup = async (req, res) => {
   try {
     const { name, email, password, phone, address, profileImage } = req.body;
-    console.log("Received signup request with data:", { name, email, password, phone, address });
+    // console.log("Received signup request with data:", { name, email, password, phone, address });
  
 
     // Hash the password
-    console.log("Hashing password for user:", email);
+    // console.log("Hashing password for user:", email);
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("Password hashed successfully.");
+    // console.log("Password hashed successfully.");
 
     // Create new user
     const newUser = new User({
@@ -23,9 +23,9 @@ const signup = async (req, res) => {
       address,
     });
 
-    console.log("Saving new user to database:", newUser);
+    // console.log("Saving new user to database:", newUser);
     await newUser.save();
-    console.log("User created successfully.");
+    // console.log("User created successfully.");
 
     res.status(201).json({ message: 'User created successfully', user: newUser });
   } catch (error) {

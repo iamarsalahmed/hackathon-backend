@@ -13,9 +13,9 @@ export const isAuthenticated = async (req, res, next) => {
     const token = req.cookies.jwt || req.headers.authorization?.split(" ")[1];
     // console.log(req.cookies, "yeh req cookie hai")
     // console.log('JWT token:', token ? 'Found in cookies or header' : 'Not found');
-    console.log( req.cookies.jwt, 'token jwt wala')
+    // console.log( req.cookies.jwt, 'token jwt wala')
     if (!token) {
-      console.log('No token provided, authorization denied');
+      // console.log('No token provided, authorization denied');
       return res.status(401).json({ message: "No token, authorization denied" });
     }
 
@@ -32,7 +32,7 @@ export const isAuthenticated = async (req, res, next) => {
     // Find the user associated with the decoded userId
     const user = await User.findById(decoded.userId);
     if (!user) {
-      console.log('User not found with userId:', decoded.userId);
+      // console.log('User not found with userId:', decoded.userId);
       return res.status(401).json({ message: "User not found" });
     }
 
