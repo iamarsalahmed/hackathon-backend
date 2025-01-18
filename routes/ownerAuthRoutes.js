@@ -116,7 +116,7 @@ console.log(token, "from backend")
     // );
     res.cookie("jwt", token,{
       
-      secure: process.env.NODE_ENV === "production", // Ensure cookie is sent only over HTTPS in production
+
       maxAge: 3600000, // Set cookie expiry (1 hour in this case)
       sameSite: "none", // Prevents the cookie from being sent with cross-site requests
     } );
