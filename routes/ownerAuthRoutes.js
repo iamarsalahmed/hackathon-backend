@@ -121,7 +121,7 @@ console.log(token, "from backend")
     res.cookie("jwt", token, {
       maxAge: 3600000, // 1 hour in milliseconds
       httpOnly: false, // Prevent access from JavaScript
-      secure: false, // Set secure only in production
+      secure: true, // Set secure only in production
       sameSite: "None", // Allow cross-site requests
     });
     
