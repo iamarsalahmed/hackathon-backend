@@ -120,7 +120,7 @@ console.log(token, "from backend")
     // } );
     res.cookie("jwt", token, {
       maxAge: 3600000, // 1 hour in milliseconds
-      httpOnly: true, // Prevent access from JavaScript
+      httpOnly: false, // Prevent access from JavaScript
       secure: process.env.NODE_ENV === "production", // Set secure only in production
       sameSite: "None", // Allow cross-site requests
     });
