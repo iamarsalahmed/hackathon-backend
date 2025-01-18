@@ -108,7 +108,7 @@ router.post("/owner/login", async (req, res) => {
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
-
+console.log(token, "from backend")
     // Set the cookie with the specified attributes
     // res.setHeader(
     //   "Set-Cookie",
@@ -118,7 +118,7 @@ router.post("/owner/login", async (req, res) => {
       
       secure: process.env.NODE_ENV === "production", // Ensure cookie is sent only over HTTPS in production
       maxAge: 3600000, // Set cookie expiry (1 hour in this case)
-      sameSite: "Strict", // Prevents the cookie from being sent with cross-site requests
+      sameSite: "none", // Prevents the cookie from being sent with cross-site requests
     } );
     // Send response
     return res.status(200).json({ message: "Login successful, token set in cookie" });
