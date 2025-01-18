@@ -114,9 +114,16 @@ console.log(token, "from backend")
     //   "Set-Cookie",
     //   `jwt=${token}; HttpOnly; SameSite=None; Secure; Path=/; Partitioned`
     // );
-    res.cookie("jwt", token,{
-      maxAge: 3600000, // Set cookie expiry (1 hour in this case)
-    } );
+    // res.cookie("jwt", token,{
+    //   maxAge: 3600000, // Set cookie expiry (1 hour in this case)
+    //   sameSite= "none"
+    // } );
+    res.cookie("jwt", token, {
+      maxAge: 3600000, // 1 hour
+      // Ensures the cookie is not accessible via client-side JavaScript
+    // Secure flag for HTTPS in production
+      sameSite: "None", // Properly formatted SameSite value
+    });
     // Send response
     return res.status(200).json({ message: "Login successful, token set in cookie" });
   } catch (error) {
