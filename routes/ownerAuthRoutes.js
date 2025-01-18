@@ -86,7 +86,7 @@ router.post("/owner/signup", async (req, res) => {
 //       res.status(500).json({ error: error.message });
 //     }
 //   });
-router.post("/owner/login", async (req, res) => {
+router.post("/owner/login",  async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -115,10 +115,7 @@ console.log(token, "from backend")
     //   `jwt=${token}; HttpOnly; SameSite=None; Secure; Path=/; Partitioned`
     // );
     res.cookie("jwt", token,{
-      
-
       maxAge: 3600000, // Set cookie expiry (1 hour in this case)
-      sameSite: "none", // Prevents the cookie from being sent with cross-site requests
     } );
     // Send response
     return res.status(200).json({ message: "Login successful, token set in cookie" });
