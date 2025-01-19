@@ -311,7 +311,7 @@ router.post("/owner/login", async (req, res) => {
     res.cookie("AuthToken", token, {
       maxAge: 3600000, // 1 hour in milliseconds
       httpOnly: false,  // Secure cookie to prevent client-side access
-      secure: true, // Only set secure cookie in production
+      secure: false, // Only set secure cookie in production
       sameSite: "None", // Allow cross-origin requests
     });
 
