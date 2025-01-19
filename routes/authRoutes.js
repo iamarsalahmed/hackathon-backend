@@ -96,7 +96,7 @@ router.get("/userDetails", async (req, res) => {
 
 // Logout Route
 router.post("/user/logout", (req, res) => {
-  res.clearCookie("jwt", { httpOnly: true });
+  res.clearCookie("AuthToken", { httpOnly: true });
   res.status(200).json({ message: "Logged out successfully" });
 });
 

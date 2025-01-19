@@ -355,7 +355,7 @@ router.get("/ownerDetails", authenticateToken, async (req, res) => {
 
 // Logout Route
 router.post("/logout", (req, res) => {
-  res.clearCookie("jwt", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "None" });
+  res.clearCookie("AuthToken", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "None" });
   res.status(200).json({ message: "Logged out successfully" });
 });
 
