@@ -42,8 +42,8 @@ router.post("/login", async (req, res) => {
     );
    
 
-     res.cookie("jwt", token,  {
-       secure: process.env.NODE_ENV === 'production', 
+     res.cookie("AuthToken", token,  {
+       secure: true, 
        sameSite: 'None' 
 
      }); 
