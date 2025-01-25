@@ -18,9 +18,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://foodapp-six-lemon.vercel.app",
-      "https://foodapp-six-lemon.vercel.app/",
-      "https://foodapp-six-lemon.vercel.app/admin/dashboard",
+      "https://hackathon-frontend-omega.vercel.app/",
+
     ],
     credentials: true, // Enable credentials (cookies)
   })
