@@ -4,7 +4,7 @@ import admin from "../models/admin.js";
 import authenticateToken from "../middleware/authenticateToken.js";
 import { generateToken } from "../utils/jwtHelper.js";
 import { successResponse, errorResponse } from "../utils/responseHelper.js";
-
+import session from "../models/session.js"
 const router = express.Router();
 
 // Signup Route
@@ -54,7 +54,13 @@ router.post("/owner/login", async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "None",
     });
+    const newSession = new session({
+      adminId: owner._id,
+      token: token,
+    });
 
+    // console.log("Saving new user to database:", newUser);
+    await newSession.save()
     successResponse(res, "Login successful");
   } catch (error) {
     errorResponse(res, error.message);

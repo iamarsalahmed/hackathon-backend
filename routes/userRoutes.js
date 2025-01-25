@@ -1,12 +1,14 @@
 import bcrypt from "bcryptjs";
 import fileUpload from "express-fileupload";
 import cloudinary from "../config/couldinary.js";
-import User from "../models/user.js"; // Import your User model
+import User from "../models/user.js"; 
+import Admin from "./adminRoutes.js"// Import your User model
+import session from "../models/session.js"
 import signup from "../controller/authController.js";
 import jwt from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 import cookieParser from "cookie-parser";
-import { isAuthenticated } from "../middleware/auth.js";
+// import { isAuthenticated } from "../middleware/auth.js";
 import express from "express";
 const router = express.Router();
 
@@ -35,20 +37,21 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid Password" });
     }
 
+    
+
     // Generate the JWT token
     const token = jwt.sign(
       { email: client.email, userId: client._id },
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
-
-    // Set the token as a cookie
-    res.cookie("AuthToken", token, {
-      httpOnly: true, // Prevent client-side JavaScript access
-      secure: true, // Use secure cookies in production
-      sameSite: "None", // Cross-site cookie (important for production)
-      maxAge: 3600000, // 1 hour in milliseconds
+    const newSession = new session({
+      userId: client._id,
+      token: token,
     });
+
+    // console.log("Saving new user to database:", newUser);
+    await newSession.save()
 
     // Send the token in the response
     res.status(200).json({ message: "Login successful", token });
@@ -56,21 +59,49 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-router.post("/verify-token", (req, res) => {
-  const authHeader = req.headers.authorization;
 
+
+async function verifyUser(token) {
+  const sessionUser = await session.findOne({ token });
+  if(!sessionUser || !token ) {
+    return {status: false, message: 'Unauthorized'}
+  }
+  if(sessionUser.userId) {
+    const user = await User.findOne({ _id: sessionUser.userId})
+    return {status: true, data: user, role: 'User'}
+  } 
+  if(sessionUser.adminId) {
+    const admin = await Admin.findOne({ _id: sessionUser.adminId})
+    return {status: true, data: admin, role: 'Admin'}
+  }
+
+}
+router.post("/verify-token", async(req, res) => {
+  const authHeader = req.headers.authorization;
   if (!authHeader) {
     return res.status(401).json({ success: false, message: "Token not provided" });
   }
-
   const token = authHeader.split(" ")[1];
-
-  try {
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    return res.status(200).json({ success: true, message: "Token verified", user: decoded });
-  } catch (error) {
-    return res.status(401).json({ success: false, message: "Invalid or expired token" });
+  const data = await verifyUser(token);
+  if(!data.status) {
+    return res.status(404).json({ message: "Unauthorized" });
+  } else {
+    return res.status(200).json({data})
   }
+  
+  // const sessionUser = await session.findOne({ token });
+  // if (!sessionUser) {
+  //   return res.status(404).json({ message: "Unauthorized" });
+  // }
+
+
+
+  // try {
+  //   // const decoded = jwt.verify(token, process.env.SECRET_KEY);
+  //   return res.status(200).json({ success: true, message: "Token verified", user: decoded, role: 'User' });
+  // } catch (error) {
+  //   return res.status(401).json({ success: false, message: "Invalid or expired token" });
+  // }
 });
 // router.post("/login", async (req, res) => {
 //   try {
@@ -111,7 +142,7 @@ router.post("/verify-token", (req, res) => {
 // });
 
 // Get All Users Route
-router.get("/userDetails", isAuthenticated, async (req, res) => {
+router.get("/userDetails",  async (req, res) => {
   try {
     // Extract userId from the Authorization token
     const token = req.headers.authorization?.split(" ")[1]; // Get the token from Authorization header

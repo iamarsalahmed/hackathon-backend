@@ -5,7 +5,7 @@ import Order from './Order.js';
 const restaurantSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'admin', required: true },
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'admin' },
     address: {
       street: String,
       city: String,

@@ -1,12 +1,20 @@
 import express from "express";
 import Restaurant from "../models/restaurant.js"; // Update path as necessary
 import { jwtDecode } from "jwt-decode";
+import {verifyUser, verifAdmin} from "../middleware/auth.js"
+
 const router = express.Router();
 
 // Create a new restaurant
 router.post("/", async (req, res) => {
+ 
   try {
-    const restaurant = new Restaurant(req.body);
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(" ")[1];
+    const session = await verifAdmin(token); 
+    console.log(session, "session")
+    const restaurant = new Restaurant({...req.body, owner: session.data._id});
+    console.log(restaurant)
     const savedRestaurant = await restaurant.save();
     res.status(201).json(savedRestaurant);
   } catch (err) {
