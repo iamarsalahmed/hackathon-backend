@@ -5,6 +5,7 @@ import authenticateToken from "../middleware/authenticateToken.js";
 import { generateToken } from "../utils/jwtHelper.js";
 import { successResponse, errorResponse } from "../utils/responseHelper.js";
 import session from "../models/session.js"
+import jwt from "jsonwebtoken"
 const router = express.Router();
 
 // Signup Route
@@ -46,8 +47,12 @@ router.post("/login", async (req, res) => {
       return errorResponse(res, "Invalid credentials", 401);
     }
 
-    const token = generateToken({ email: owner.email, userId: owner._id });
-
+    // const token = generateToken({ email: owner.email, userId: owner._id });
+  const token = jwt.sign(
+      { email: owner.email, userId: owner._id },
+      process.env.SECRET_KEY,
+      { expiresIn: "1h" }
+    );
     res.cookie("AuthToken", token, {
       maxAge: 3600000,
       httpOnly: true,
@@ -61,11 +66,11 @@ router.post("/login", async (req, res) => {
 
     // console.log("Saving new user to database:", newUser);
     await newSession.save()
-    successResponse(res, "Login successful");
+    res.status(200).json({ message: "Login successful", token });
   } catch (error) {
     errorResponse(res, error.message);
   }
-});
+}); 
 
 // Get All Owners Route
 router.get("/owners", async (req, res) => {
