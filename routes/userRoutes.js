@@ -1,4 +1,3 @@
-import express from "express";
 import bcrypt from "bcryptjs";
 import fileUpload from "express-fileupload";
 import cloudinary from "../config/couldinary.js";
@@ -7,7 +6,8 @@ import signup from "../controller/authController.js";
 import jwt from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 import cookieParser from "cookie-parser";
-
+import { isAuthenticated } from "../middleware/auth.js";
+import express from "express";
 const router = express.Router();
 
 // Enable file upload middleware for this router
@@ -19,47 +19,99 @@ router.use(
 );
 
 router.post("/signup", signup);
-
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Find the user in the database
     const client = await User.findOne({ email });
     if (!client) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Validate the password
     const isPasswordValid = await bcrypt.compare(password, client.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid Password" });
     }
-  
 
+    // Generate the JWT token
     const token = jwt.sign(
       { email: client.email, userId: client._id },
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
-   
 
-    //  res.cookie("AuthToken", token,  {
-    //    secure: true, 
-    //    sameSite: 'None' 
+    // Set the token as a cookie
+    res.cookie("AuthToken", token, {
+      httpOnly: true, // Prevent client-side JavaScript access
+      secure: true, // Use secure cookies in production
+      sameSite: "None", // Cross-site cookie (important for production)
+      maxAge: 3600000, // 1 hour in milliseconds
+    });
 
-    //  }); 
-
-    res.setHeader('Set-Cookie', `token=${token}; HttpOnly; Path=/; Max-Age=3600; Secure; SameSite=Strict`);
-    res.status(200).json({ message: 'Login successful' });
-    // console.log("cookie checked okay", token);
-    
-    // res.status(200).json({ message: "Login successful" });
+    // Send the token in the response
+    res.status(200).json({ message: "Login successful", token });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+router.post("/verify-token", (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.status(401).json({ success: false, message: "Token not provided" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    return res.status(200).json({ success: true, message: "Token verified", user: decoded });
+  } catch (error) {
+    return res.status(401).json({ success: false, message: "Invalid or expired token" });
+  }
+});
+// router.post("/login", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     const client = await User.findOne({ email });
+//     if (!client) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     const isPasswordValid = await bcrypt.compare(password, client.password);
+//     if (!isPasswordValid) {
+//       return res.status(401).json({ message: "Invalid Password" });
+//     }
+  
+
+//     const token = jwt.sign(
+//       { email: client.email, userId: client._id },
+//       process.env.SECRET_KEY,
+//       { expiresIn: "1h" }
+//     );
+   
+
+//     //  res.cookie("AuthToken", token,  {
+//     //    secure: true, 
+//     //    sameSite: 'None' 
+
+//     //  }); 
+
+  
+//     res.status(200).json({ message: 'Login successful' });
+//     // console.log("cookie checked okay", token);
+    
+//     // res.status(200).json({ message: "Login successful" });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 // Get All Users Route
-router.get("/userDetails", async (req, res) => {
+router.get("/userDetails", isAuthenticated, async (req, res) => {
   try {
     // Extract userId from the Authorization token
     const token = req.headers.authorization?.split(" ")[1]; // Get the token from Authorization header
