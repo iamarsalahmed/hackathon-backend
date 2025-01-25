@@ -8,7 +8,7 @@ import session from "../models/session.js"
 const router = express.Router();
 
 // Signup Route
-router.post("/owner/signup", async (req, res) => {
+router.post("/signup", async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
 
@@ -32,7 +32,7 @@ router.post("/owner/signup", async (req, res) => {
 });
 
 // Login Route
-router.post("/owner/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
