@@ -42,16 +42,17 @@ router.post("/login", async (req, res) => {
     );
    
 
-     res.cookie("AuthToken", token,  {
-       secure: true, 
-       sameSite: 'None' 
+    //  res.cookie("AuthToken", token,  {
+    //    secure: true, 
+    //    sameSite: 'None' 
 
-     }); 
+    //  }); 
 
-
+    res.setHeader('Set-Cookie', `token=${token}; HttpOnly; Path=/; Max-Age=3600; Secure; SameSite=Strict`);
+    res.status(200).json({ message: 'Login successful' });
     // console.log("cookie checked okay", token);
     
-    res.status(200).json({ message: "Login successful" });
+    // res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

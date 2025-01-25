@@ -31,30 +31,30 @@ router.get("/", async (req, res) => {
       return res.status(400).json({ error: "Token not provided" });
     }
 
-    // Decode the token to extract restaurantOwnerId
+    // Decode the token to extract adminId
     const decodedToken = jwtDecode(token);
-    const restaurantOwnerId = decodedToken.userId; // Assuming the token contains the restaurantOwnerId
-    // console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Debugging log
+    const adminId = decodedToken.userId; // Assuming the token contains the adminId
+    // console.log("Decoded adminId:", adminId); // Debugging log
 
     // Fetch all restaurants and check the owner id
     const restaurants = await Restaurant.find();
     // console.log("sara chutiyapa hai", restaurants);
-    // Filter the restaurants that belong to the decoded restaurantOwnerId
+    // Filter the restaurants that belong to the decoded adminId
     // const filteredRestaurants = restaurants.filter(
     //   (restaurant) =>
     //     restaurant.owner &&
-    //     restaurant.owner._id.toString() === restaurantOwnerId
+    //     restaurant.owner._id.toString() === adminId
     // );
 
     const filteredRestaurants = restaurants.filter((restaurant) => {
       // console.log("Restaurant being checked:", restaurant.owner); // Log the restaurant name
       // console.log("Restaurant owner ID:", restaurant.owner._id); // Log the owner's ID if it exists
-      // console.log("Decoded restaurantOwnerId:", restaurantOwnerId); // Log the decoded owner ID
+      // console.log("Decoded adminId:", adminId); // Log the decoded owner ID
       const ownerId = restaurant.owner?._id?.toString();
       // Filter condition
       return (
       
-        ownerId === restaurantOwnerId
+        ownerId === adminId
       );
     });
 

@@ -4,7 +4,12 @@ import cloudinary from "../config/couldinary.js"; // Cloudinary configuration
 
 const signup = async (req, res) => {
   try {
-    const { name, email, password, phone, address, profileImage } = req.body;
+    const { name, 
+      email,
+       password, 
+      //  phone, address,
+      //   profileImage 
+      } = req.body;
     // console.log("Received signup request with data:", { name, email, password, phone, address });
  
 
@@ -18,9 +23,9 @@ const signup = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      phone,
-      profileImage: profileImage,
-      address,
+      // phone,
+      // profileImage: profileImage,
+      // address,
     });
 
     // console.log("Saving new user to database:", newUser);

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const restaurantOwnerSchema = new mongoose.Schema(
+const adminSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },
@@ -15,5 +15,5 @@ const restaurantOwnerSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const RestaurantOwner =  mongoose.model('RestaurantOwner', restaurantOwnerSchema);
-export default RestaurantOwner;
+const admin =  mongoose.model('admin', adminSchema);
+export default admin;

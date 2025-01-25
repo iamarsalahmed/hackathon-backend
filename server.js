@@ -4,29 +4,15 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
 import connectDb from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js";
-import verifyTokenRoute from "./routes/verifyTokenRoute.js";
-import ownerAuthRoutes from "./routes/ownerAuthRoutes.js";
+import authRoutes from "./routes/userRoutes.js";
+import authenticateToken from "./middleware/authenticateToken.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import fileUpload from "express-fileupload";
 import restaurantRoutes from "./routes/restaurantRoutes.js";
 
 const app = express();
-const PORT = 3001;
+const PORT = 5000;
 dotenv.config();
-// app.use(cors({
-//     origin: "https://foodapp-six-lemon.vercel.app/",
-//     credentials: true,
-//   }));
-
-// app.use(cors({
-//     origin: [
-//       "https://foodapp-six-lemon.vercel.app",  // without the trailing slash
-//       "https://foodapp-six-lemon.vercel.app/",  // with the trailing slash
-//       "https://foodapp-six-lemon.vercel.app/admin/dashboard",
-//       "http://localhost:3000"
-//     ],
-//     credentials: true,
-//   }));
 
 app.use(
   cors({
@@ -46,18 +32,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 connectDb();
-// Routes
 
-// Enable file upload
 app.use(
   fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp/", // Specify a temp directory for file storage
   })
 );
-app.use("/auth", authRoutes); // Add the team routes
-app.use("/admin", ownerAuthRoutes); // Add the team routes
-app.use("/verify", verifyTokenRoute);
+app.use("/user", authRoutes); // Add the team routes
+app.use("/admin", adminRoutes); // Add the team routes
+app.use("/verify", authenticateToken);
 app.use("/restaurant", restaurantRoutes);
 
 app.listen(PORT, (req, res) => {
